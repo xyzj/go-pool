@@ -34,7 +34,7 @@ func (g *GoPool[T]) Get() T {
 func (g *GoPool[T]) Put(i T) {
 	g.mu.Lock()
 	defer g.mu.Unlock()
-	if len(g.idle) < g.opt.maxPoolSize {
+	if len(g.idle) < g.opt.maxIdleSize {
 		g.idle <- i
 		return
 	}
@@ -47,7 +47,7 @@ func (g *GoPool[T]) Put(i T) {
 // Returns a pointer to the created GoPool[T].
 func New[T any](new func() T, opts ...PoolOpts) *GoPool[T] {
 	opt := &PoolOpt{
-		maxPoolSize: 10,
+		maxIdleSize: 10,
 	}
 	for _, o := range opts {
 		o(opt)
@@ -59,6 +59,6 @@ func New[T any](new func() T, opts ...PoolOpts) *GoPool[T] {
 		pool: sync.Pool{
 			New: func() any { return nil },
 		},
-		idle: make(chan T, opt.maxPoolSize),
+		idle: make(chan T, opt.maxIdleSize),
 	}
 }
