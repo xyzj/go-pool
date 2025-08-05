@@ -1,3 +1,3 @@
 module github.com/xyzj/go-pool
 
-go 1.21
+go 1.22

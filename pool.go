@@ -48,9 +48,17 @@ func (g *GoPool[T]) Put(i T) {
 func New[T any](new func() T, opts ...PoolOpts) *GoPool[T] {
 	opt := &PoolOpt{
 		maxIdleSize: 10,
+		warmCount:   0,
 	}
 	for _, o := range opts {
 		o(opt)
+	}
+	opt.warmCount = min(opt.maxIdleSize, opt.warmCount)
+	ch := make(chan T, opt.maxIdleSize)
+	if opt.warmCount > 0 {
+		for range opt.warmCount {
+			ch <- new()
+		}
 	}
 	return &GoPool[T]{
 		new: new,
@@ -59,6 +67,6 @@ func New[T any](new func() T, opts ...PoolOpts) *GoPool[T] {
 		pool: sync.Pool{
 			New: func() any { return nil },
 		},
-		idle: make(chan T, opt.maxIdleSize),
+		idle: ch,
 	}
 }

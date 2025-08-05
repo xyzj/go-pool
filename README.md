@@ -49,6 +49,7 @@ pool := gopool.New(func() T { ... }, gopool.WithMaxPoolSize(n))
 ```
 - `func() T`：对象的创建函数
 - `WithMaxPoolSize(n)`：可选，设置最大空闲池容量，默认 10
+- `WithWarmCount(n)`：可选，设置池内对象预热数量，默认 0
 
 ### 获取对象
 
